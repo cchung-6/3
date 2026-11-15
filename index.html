@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>버디월드 :: 어느 학교냐?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#333; --sub:#777; --line:#b9c6d6; --paper:#fff; --bg:#dfe9f3;
+  --main:#3d7fc4; --deep:#1f3f66; --point:#f2a900; --soft:#eef4fa;
+  --gothic:Gulim,'굴림',Dotum,'돋움','Noto Sans KR',sans-serif;
+  --hand:'Gaegu','Noto Sans KR',sans-serif;
+}
+body.sk-haerim{--main:#2d5fb3;--deep:#1c2338;--point:#e8b923;--soft:#eef2fa;--bg:#d9e0ee;--line:#b4bfd6}
+body.sk-seojin{--main:#1f6f6b;--deep:#12393a;--point:#d9435a;--soft:#fdf1f3;--bg:#dcebe9;--line:#aecbc8}
+body.sk-baeksan{--main:#7a5a3c;--deep:#3d2a1c;--point:#b08d4f;--soft:#f8f3e6;--bg:#ebe3d2;--line:#cdbf9f}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  font-family:var(--gothic);font-size:13px;line-height:1.6;color:var(--ink);
+  background-color:var(--bg);
+  background-image:radial-gradient(rgba(255,255,255,.75) 1.2px,transparent 1.3px);
+  background-size:12px 12px;min-height:100vh;overflow-x:hidden;
+}
+button{font-family:inherit;font-size:inherit;cursor:pointer;color:inherit}
+a{color:var(--main)}
+.hidden{display:none!important}
+
+/* ---------- 입장 화면 ---------- */
+#gate{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px 16px}
+.gate-box{width:100%;max-width:720px;background:var(--paper);border:1px solid #9fb2c8;box-shadow:4px 4px 0 rgba(31,63,102,.18)}
+.gate-top{background:var(--deep);color:#fff;padding:6px 12px;font-size:11px;display:flex;justify-content:space-between;letter-spacing:.02em}
+.gate-body{padding:28px 20px 24px;text-align:center}
+.logo{font-weight:700;font-size:15px;letter-spacing:.18em;color:var(--main)}
+.logo b{color:var(--point)}
+.gate-q{font-size:clamp(34px,8vw,56px);font-weight:700;letter-spacing:-.04em;margin:14px 0 6px;color:#1c2338;line-height:1.15}
+.gate-sub{color:var(--sub);margin:0 0 22px}
+.schools{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;text-align:left}
+.sch{border:1px solid #9fb2c8;background:#fff;padding:0;display:flex;flex-direction:column;justify-content:flex-start;align-items:stretch;text-align:left;transition:transform .12s}
+.sch-band{flex:0 0 auto}
+.sch-in{flex:1;display:flex;flex-direction:column}
+.sch-go{margin-top:auto!important}
+.sch-desc{margin-bottom:10px!important}
+.sch:hover,.sch:focus-visible{transform:translate(-2px,-2px);box-shadow:3px 3px 0 rgba(0,0,0,.2);outline:none}
+.sch-band{height:54px;display:flex}
+.sch-band i{flex:1}
+.sch-in{padding:10px 12px 12px}
+.sch-name{font-size:19px;font-weight:700;letter-spacing:-.03em}
+.sch-kind{font-size:11px;color:var(--sub)}
+.sch-desc{margin:8px 0 0;font-size:12px;line-height:1.55}
+.sch-go{margin-top:10px;font-size:11px;font-weight:700;color:#1c2338;border-top:1px dotted #9fb2c8;padding-top:8px}
+.gate-foot{margin-top:18px;font-size:11px;color:#999}
+
+/* ---------- 본 화면 ---------- */
+#app{max-width:1120px;margin:0 auto;padding:10px 16px 40px}
+.bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--deep);color:#fff;padding:7px 12px;font-size:12px}
+.bar .logo{color:#fff;font-size:13px}
+.bar .who{margin-left:auto}
+.bar .who b{color:var(--point)}
+.bar button{background:transparent;border:1px solid rgba(255,255,255,.55);color:#fff;padding:2px 8px;font-size:11px}
+.layout{display:grid;grid-template-columns:232px minmax(0,1fr);gap:12px;margin-top:12px;align-items:start}
+
+/* 일촌 목록 */
+.roster{background:var(--paper);border:1px solid var(--line);position:sticky;top:10px}
+.roster h2{margin:0;padding:7px 10px;font-size:12px;background:var(--soft);border-bottom:1px solid var(--line);color:var(--deep)}
+.rgroup{padding:6px 0 4px;border-bottom:1px dotted var(--line)}
+.rgroup:last-child{border-bottom:0}
+.rlabel{font-size:11px;font-weight:700;padding:2px 10px 4px;color:var(--sub);display:flex;gap:6px;align-items:center}
+.rlabel span{font-weight:400;color:var(--point)}
+.rrow{display:flex;gap:8px;align-items:center;width:100%;padding:5px 10px;background:none;border:0;text-align:left;min-width:0}
+.rrow:hover{background:var(--soft)}
+.rrow.on{background:var(--main);color:#fff}
+.rrow.on .rsub{color:rgba(255,255,255,.85)}
+.rav{width:30px;height:30px;flex:0 0 30px;border:1px solid var(--line);background:#e9edf2 center/cover;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#8a96a6}
+.rtx{min-width:0;flex:1}
+.rname{display:block;font-weight:700;font-size:12px;line-height:1.3}
+.rsub{display:block;font-size:11px;line-height:1.3;color:var(--sub);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rtag{font-size:10px;border:1px solid currentColor;padding:0 4px;flex:0 0 auto;opacity:.8}
+
+/* 미니홈피 창 */
+.hompy{background:var(--paper);border:1px solid var(--line);box-shadow:4px 4px 0 rgba(0,0,0,.08);min-width:0}
+.htitle{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;padding:8px 12px;border-bottom:2px solid var(--main)}
+.htitle h1{margin:0;font-size:17px;letter-spacing:-.02em;color:var(--deep);word-break:keep-all}
+.hcount{margin-left:auto;font-size:11px;color:var(--sub)}
+.hcount b{color:var(--point);font-size:13px}
+.hnote{background:var(--point);color:#fff;font-weight:700;padding:6px 12px;font-size:12px}
+.hbody{display:grid;grid-template-columns:196px minmax(0,1fr)}
+.side{border-right:1px dotted var(--line);padding:12px;background:var(--soft)}
+.pic{width:100%;aspect-ratio:1/1;border:1px solid var(--line);background:#fff center/cover;display:flex;align-items:center;justify-content:center;text-align:center;color:#a0a9b5;font-size:11px;line-height:1.4;padding:8px}
+.mood{font-size:11px;margin:8px 0 2px;color:var(--sub)}
+.mood b{color:var(--main)}
+.status{font-family:var(--hand);font-size:18px;line-height:1.35;margin:4px 0 10px;word-break:keep-all;min-height:24px}
+.meta{font-size:11px;border-top:1px dotted var(--line);padding-top:8px;margin:0}
+.meta div{display:flex;gap:6px}
+.meta dt{flex:0 0 34px;color:var(--sub)}
+.meta dd{margin:0}
+.bgm{margin-top:10px;border:1px solid var(--line);background:#fff;padding:5px 7px;font-size:11px}
+.bgm-t{color:var(--sub);font-size:10px;letter-spacing:.08em}
+.bgm-s{overflow:hidden;white-space:nowrap}
+.bgm-s span{display:inline-block;padding-left:100%;animation:mq 11s linear infinite}
+@keyframes mq{to{transform:translateX(-100%)}}
+.wave{margin-top:10px;width:100%;font-family:inherit;font-size:12px;padding:4px;border:1px solid var(--line);background:#fff}
+.main{min-width:0}
+.tabs{display:flex;border-bottom:1px solid var(--line);background:#fff;overflow-x:auto}
+.tab{flex:0 0 auto;border:0;border-right:1px solid var(--line);background:#f4f6f8;padding:7px 13px;font-size:12px;color:var(--sub)}
+.tab.on{background:var(--main);color:#fff;font-weight:700}
+.tab small{font-size:10px;opacity:.85}
+.pane{padding:14px;min-height:340px}
+.sec{margin:0 0 16px}
+.sec h3{margin:0 0 6px;font-size:12px;color:var(--deep);border-bottom:1px solid var(--line);padding-bottom:3px;display:flex;justify-content:space-between}
+.sec h3 span{font-weight:400;color:var(--sub);font-size:11px}
+.empty{padding:34px 10px;text-align:center;color:#9aa3ad;border:1px dotted var(--line);background:#fafbfc}
+.list{list-style:none;margin:0;padding:0}
+.list li{display:flex;gap:8px;padding:4px 2px;border-bottom:1px dotted #dfe5ec;font-size:12px}
+.list .d{color:var(--sub);flex:0 0 auto;font-size:11px}
+.list .t{min-width:0;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ilchon li{display:block}
+.ilchon b{color:var(--main)}
+.post{border:1px solid var(--line);margin-bottom:10px;background:#fff}
+.post-h{display:flex;justify-content:space-between;gap:8px;padding:5px 9px;background:var(--soft);font-size:12px;font-weight:700;color:var(--deep)}
+.post-h span{font-weight:400;color:var(--sub);font-size:11px;flex:0 0 auto}
+.post-b{padding:10px 12px;font-family:var(--hand);font-size:18px;line-height:1.45;white-space:pre-line;word-break:keep-all}
+.post.lock .post-b{font-family:var(--gothic);font-size:12px;color:#9aa3ad;background:repeating-linear-gradient(135deg,#fafafa 0 6px,#f1f3f5 6px 12px)}
+.cmt{border-top:1px dotted var(--line);padding:5px 12px;font-size:12px;background:#fcfdfe}
+.cmt b{color:var(--main)}
+.cmt.me b{color:var(--point)}
+.photos{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.ph{border:1px solid var(--line);background:#fff;padding:5px}
+.ph-i{aspect-ratio:4/3;background:#eef1f5 center/cover;display:flex;align-items:center;justify-content:center;text-align:center;font-size:11px;color:#a0a9b5;padding:6px}
+.ph.lock .ph-i{background:repeating-linear-gradient(135deg,#f3f3f3 0 6px,#e6e8eb 6px 12px);color:#7d8793;font-weight:700}
+.ph-c{font-size:12px;padding:5px 2px 1px;word-break:keep-all}
+.ph-c small{display:block;color:var(--sub);font-size:11px}
+.g{border-bottom:1px dotted var(--line);padding:8px 2px}
+.g-h{font-size:11px;color:var(--sub);display:flex;gap:8px;flex-wrap:wrap}
+.g-h b{color:var(--main);font-size:12px}
+.g-b{font-size:13px;margin-top:2px;word-break:keep-all}
+.g-r{margin:5px 0 0 14px;padding:4px 8px;background:var(--soft);font-size:12px;border-left:2px solid var(--main)}
+.gform{display:flex;gap:6px;margin-bottom:10px}
+.gform input{flex:1;min-width:0;font-family:inherit;font-size:13px;padding:6px 8px;border:1px solid var(--line)}
+.gform button{background:var(--main);color:#fff;border:0;padding:0 14px;font-weight:700}
+.stat{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:0;border:1px solid var(--line);margin-bottom:14px}
+.stat div{padding:6px 9px;border-right:1px dotted var(--line);border-bottom:1px dotted var(--line);font-size:12px}
+.stat small{display:block;color:var(--sub);font-size:10px}
+.qna{margin:0;border-top:1px solid var(--line)}
+.qna div{display:grid;grid-template-columns:150px minmax(0,1fr);border-bottom:1px dotted var(--line)}
+.qna dt{padding:5px 8px;background:var(--soft);font-size:12px;color:var(--deep)}
+.qna dd{margin:0;padding:5px 9px;font-size:13px;word-break:keep-all}
+.locked{padding:46px 16px;text-align:center}
+.locked .big{font-size:22px;font-weight:700;letter-spacing:-.03em;color:var(--deep);margin:10px 0 4px}
+.locked p{margin:2px 0;color:var(--sub)}
+.locked .trace{display:inline-block;margin-top:16px;text-align:left;border:1px dotted var(--line);padding:8px 12px;font-size:12px;background:#fafbfc}
+.toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%);background:#222;color:#fff;padding:9px 16px;font-size:13px;z-index:50;max-width:calc(100vw - 32px);text-align:center}
+.foot{margin-top:14px;text-align:center;font-size:11px;color:#8b95a1}
+
+@media (max-width:860px){
+  .schools{grid-template-columns:1fr}
+  .sch{display:grid;grid-template-columns:64px 1fr}
+  .sch-band{height:auto;flex-direction:column}
+  .layout{grid-template-columns:1fr}
+  .roster{position:sticky;top:0;z-index:20;display:flex;overflow-x:auto;border-left:0;border-right:0;margin:0 -16px;padding:0 8px}
+  .roster h2{display:none}
+  .rgroup{display:flex;flex:0 0 auto;border-bottom:0;border-right:1px dotted var(--line);padding:6px 4px;align-items:center}
+  .rlabel{writing-mode:vertical-rl;padding:0 2px;font-size:10px}
+  .rlabel span{display:none}
+  .rrow{flex-direction:column;gap:2px;width:58px;padding:3px 2px;text-align:center}
+  .rrow .rsub,.rrow .rtag{display:none}
+  .rname{font-size:11px;white-space:nowrap}
+  .hbody{grid-template-columns:1fr}
+  .side{border-right:0;border-bottom:1px dotted var(--line);display:grid;grid-template-columns:104px minmax(0,1fr);gap:0 12px;align-items:start}
+  .side .pic{grid-row:1/5}
+  .mood{margin-top:0}
+  .bgm,.wave{grid-column:1/3}
+  .qna div{grid-template-columns:104px minmax(0,1fr)}
+  body{font-size:14px}
+}
+@media (prefers-reduced-motion:reduce){.bgm-s span{animation:none;padding-left:0}}
+</style>
+</head>
+<body>
+
+<div id="gate"></div>
+<div id="app" class="hidden"></div>
+
+<script>
+/* =====================================================================
+   DATA — 내용은 여기만 고치면 됨
+   · img / photos[].img 에 이미지 URL 넣으면 자리표시 대신 사진이 뜸
+   · lock:[학교] → 그 학교로 접속하면 홈피 전체가 일촌공개로 잠김
+   · open:[학교] → 그 학교로 접속했을 때만 보임
+   ===================================================================== */
+const SITE = { name:'버디월드', today:'2008.06.14 (토)', ask:'어느 학교냐?' };
+
+const SCHOOLS = {
+  haerim:{ name:'해림고', kind:'인문계 · 남녀공학', band:['#1c2338','#e8b923','#c9ccd3','#2d5fb3'],
+    desc:'얼짱이랑 투데이로 서열이 갈리는 학교. 2학년이 짱이라 3학년 표정이 안 좋다.' },
+  seojin:{ name:'서진공고', kind:'공고 · 남초', band:['#12393a','#111','#f4b6c2','#c8323c'],
+    desc:'오토바이, 알바, 실전. 해림 교복만 보면 일단 불러 세운다.' },
+  baeksan:{ name:'백산고', kind:'남고', band:['#3d2a1c','#f3ead6','#222','#cbb48a'],
+    desc:'짱이 셋. 셋이 친해서 아무도 못 건드린다. 두발은 자유, 복장은 엄격.' }
+};
+
+const QUESTIONS = ['이름','별명','학교 / 반','키','지금 기분','요즘 듣는 노래','좋아하는 음식','싫어하는 것','자주 가는 곳','특기','버릇','핸드폰','제일 친한 친구','이상형','첫사랑','지금 좋아하는 사람','10년 뒤의 나','제일 무서운 것','일촌들에게 한마디','이 문답 넘길 사람'];
+
+const CHARS = [
+/* ------------------------------ 해림고 ------------------------------ */
+{ id:'taehyuk', name:'권태혁', school:'haerim', cls:'2학년 4반', age:18, height:'182cm', tag:'해림 짱',
+  img:'', title:'권태혁님의 미니홈피', status:'.', mood:'-', today:87, total:'9,120', bgm:'',
+  diary:[],
+  photos:[{ cap:'.', sub:'2008.03.02', img:'', cmts:[['길상현','야 이거 내가 찍어준 건데 제목이 점이 뭐냐'],['육상진','표정 봐라 ㅋㅋㅋ 증명사진이냐']] }],
+  guest:[
+    ['육상진','06.13','살아있냐 ㅋㅋ 방명록 답 좀 달아라 일촌평이라도'],
+    ['도유란','06.12','야 권태혁 너 어제 ... 아 아니다 됐어'],
+    ['해림1학년','06.11','선배님 일촌 신청 넣었는데 두 달째 대기중입니다ㅠㅠ'],
+    ['문세라','06.09','태혁아 밥은 먹고 다니니~ 누나가 보고 있다'],
+    ['서진 ㅇㅈㄱ','06.07','종점으로 나와라','(답글 없음. 다음 날 방명록은 그대로였다.)']
+  ],
+  ilchon:[['육상진','우리 대장♡ 답장은 안 함'],['길상현','해림 짱 = 내 친구 ㅇㅇ'],['도유란','...그냥 친구'],['변대호','든든한 친구^^']],
+  qna:null },
+
+{ id:'sangjin', name:'육상진', school:'haerim', cls:'2학년 4반', age:18, height:'178cm', tag:'태혁 측근 · 마당발',
+  img:'', title:'상진이네 ♬ 놀다 가', status:'일촌신청은 예쁜 순서대로 받음 ^^', mood:'심심', today:214, total:'31,877', bgm:'태양 - 나만 바라봐',
+  diary:[
+    { t:'오늘의 교훈', d:'06.13', b:'싸움은 말리는 척하면서\n제일 뒤에 서는 거다.\n\n오늘도 무사함 ㅋ', cmts:[['길상현','기생오라비 새끼 ㅋㅋㅋㅋ'],['육상진','넌 뒤에도 못 서고 튀잖아']] },
+    { t:'커플링', d:'06.08', b:'맞췄음.\n며칠 됐는지는 은비가 앎.', cmts:[['정은비','나도 모름'],['여사친1','헐 둘이 진짜 사귀는 거 맞아?ㅋㅋ']] },
+    { t:'ㅋ', d:'06.02', b:'복도에 찐따 지나가길래\n옆에 있던 애한테 "니 남친 지나간다" 했더니\n등짝 맞음. 가치 있었다.' }
+  ],
+  photos:[
+    { cap:'커플링 인증', sub:'남들 보라고 올림', img:'' },
+    { cap:'스티커사진', sub:'번화가 · 여사친 넷', img:'' },
+    { cap:'머리 다시 함', sub:'학주한텐 원래 이 색이라고 함', img:'' }
+  ],
+  guest:[
+    ['여사친2','06.14','상진아 오늘 노래방 가? 나 지금 번화가'],
+    ['정은비','06.13','그 사진 내려. 내 얼굴 이상하게 나왔잖아','ㅇㅇ (안 내림)'],
+    ['길상현','06.12','야 너는 왜 여자애들이 방명록을 쓰냐 비결 좀','얼굴'],
+    ['서진 ㅇㅈㄱ','06.10','면상 치워라','ㅋㅋ 무서워라~']
+  ],
+  ilchon:[['정은비','남친. 일단은.'],['권태혁','.'],['길상현','기생오라비'],['여사친1','해림에서 제일 가벼운 놈ㅋㅋ']],
+  qna:['육상진','와인머리, 마당발','해림고 2-4','178','심심함. 누가 놀아줘','나만 바라봐 (나는 안 그럼)','남이 사주는 거','맞는 거, 진지한 얘기','번화가 노래방','말로 빠져나가기','거짓말 할 때 웃음','슬라이드. 스티커 붙임','태혁이 (옆자리가 제일 안전함)','예쁘면 됨','기억 안 남 ^^','여친 있잖아 뭘 물어','어디서든 센 놈 옆에 있을 듯','진짜로 맞는 거','일촌평 좀 써라 다들','길상현 (어차피 20개 다 쓸 놈)'] },
+
+{ id:'sanghyun', name:'길상현', school:'haerim', cls:'2학년 4반', age:18, height:'176cm', tag:'무리의 나대는 원숭이',
+  img:'', title:'★해림 4대천왕 길상현★', status:'백산 길성민 = 우리 형 (진짜임 물어봐)', mood:'신남!!!', today:9, total:'1,204', bgm:'MC몽 - 서커스',
+  diary:[
+    { t:'서든 5킬ㅋㅋㅋㅋ', d:'06.14', b:'오늘 PC방에서 5킬 함\n옆자리 초딩이 형 잘한다고 함\n\n인정받는 삶', cmts:[['육상진','데스는 몇 번인데'],['길상현','그건 안 중요함']] },
+    { t:'해림 4대천왕 발표', d:'06.11', b:'1. 권태혁\n2. 길상현\n3. (미정)\n4. (미정)\n\n이의 있으면 방명록', cmts:[['육상진','나머지 둘 누구냐 ㅋㅋㅋ'],['도유란','누가 정했는데'],['변대호','상현이 멋지다^^']] },
+    { t:'ㅠㅠ', d:'06.06', lock:true },
+    { t:'ㅠㅠㅠ', d:'05.21', lock:true },
+    { t:'ㅠ', d:'05.03', lock:true },
+    { t:'이번엔 진짜 될 것 같음', d:'05.02', b:'내일 고백함.\n이번엔 느낌이 다름.\n응원 바람', cmts:[['육상진','저번에도 느낌 달랐잖아']] }
+  ],
+  photos:[
+    { cap:'헤어밴드 새로 삼', sub:'흰색이 진리', img:'' },
+    { cap:'PC방 내 자리', sub:'단골이라 사장님이 맡아줌', img:'' },
+    { cap:'우리 형 오토바이', sub:'뒤에 타본 적은 없음', img:'' }
+  ],
+  guest:[
+    ['길성민','06.13','내 이름 내려라','형 ㅠㅠ 홍보 효과가 있단 말이야'],
+    ['육상진','06.12','투데이 9 중에 8이 너지?','아니거든 7이거든'],
+    ['변대호','06.11','상현아 오늘도 화이팅^^','ㅇㅇ 매점 갈 때 불러'],
+    ['서진 ㅇㅂㄹ','06.09','님 누구세요ㅋㅋㅋ 4대천왕 처음 들어봄']
+  ],
+  ilchon:[['육상진','입만 살았음'],['변대호','제일 고마운 친구^^'],['길성민','동생'],['권태혁','시끄러움']],
+  qna:['길상현!!','해림 4대천왕, 원숭이(이건 인정 안 함)','해림고 2-4','176 (밴드 포함 178)','완전 좋음!!!','서커스','매점 핫바','조용한 거. 무시당하는 거','PC방 (서든, 카트)','소문 제일 먼저 아는 거','말하면서 손이 같이 움직임','폴더. 벨소리 최대','태혁이! 상진이는 가끔','나 좋다는 애','초6 (차임)','비밀 (또 쓸 거임)','해림 전설로 남음','형이 화난 얼굴','방명록 좀 써줘 제발','육상진 (너는 왜 인기 많냐)'] },
+
+{ id:'daeho', name:'변대호', school:'haerim', cls:'2학년 4반', age:18, height:'177cm', tag:'순둥이 · 별명 똥대호',
+  img:'', title:'대호네 작은 쉼터^^', status:'오늘도 웃자 ^^', mood:'좋아요', today:6, total:'842', bgm:'김동률 - 다시 시작해보자',
+  statusBy:{ other:'타교 친구도 환영해요^^ 일촌 신청 편하게 주세요' },
+  note:{ seojin:'변대호님이 회원님께 일촌 신청을 보냈습니다. "서진 친구 사귀고 싶었어요^^"', baeksan:'변대호님이 회원님께 일촌 신청을 보냈습니다. "백산 친구 사귀고 싶었어요^^"' },
+  diary:[
+    { t:'좋은 하루^^', d:'06.13', b:'오늘도 친구들이랑 재밌었다.\n매점을 세 번 다녀왔지만\n운동이 됐으니 좋은 거다 ^^', cmts:[['길상현','ㅇㅇ 내일은 네 번'],['변대호','응 ^^']] },
+    { t:'비공개 글입니다', d:'06.13', lock:true },
+    { t:'비공개 글입니다', d:'06.12', lock:true },
+    { t:'비공개 글입니다', d:'06.11', lock:true },
+    { t:'별명', d:'06.10', b:'애들이 또 대변이라고 불렀다.\n재밌는 별명이라고 생각한다 ^^', cmts:[['육상진','역시 대변 마음이 넓어']] },
+    { t:'비공개 글입니다', d:'06.10', lock:true },
+    { t:'비공개 글입니다', d:'06.09', lock:true }
+  ],
+  diaryNote:'비공개 글 37개',
+  photos:[
+    { cap:'하늘', sub:'학교 옥상 가는 계단에서', img:'' },
+    { cap:'우리 반 친구들', sub:'나는 찍어주는 사람^^', img:'' }
+  ],
+  guest:[
+    ['길상현','06.14','똥대호 월요일에 체육복 두 벌','응 챙길게 ^^'],
+    ['육상진','06.12','대변아 숙제 좀','책상에 넣어놨어 ^^'],
+    ['모르는 사람','06.08','일촌 신청 감사합니다. 누구신지..?','안녕하세요^^ 지나가다 홈피가 예뻐서요. 친하게 지내요']
+  ],
+  ilchon:[['길상현','착함'],['육상진','편함 ㅋㅋ'],['권태혁','.']],
+  qna:null },
+
+{ id:'yuran', name:'도유란', school:'haerim', cls:'2학년 4반', age:18, height:'166cm', tag:'세라 라인',
+  img:'', title:'유란이 꺼!! 건들지 마', status:'할 말 있으면 앞에서 해라', mood:'짜증', today:58, total:'7,410', bgm:'쥬얼리 - One More Time',
+  diary:[
+    { t:'아 진짜', d:'06.13', b:'아니 걔는 왜 사람이 말을 하면\n대답을 한 글자로 하냐\n\n아 누구 얘기 아님. 됐어.', cmts:[['육상진','누구 얘기임? ㅋㅋㅋㅋㅋ'],['도유란','아 누구 얘기 아니라고!!!'],['문세라','유란아 티 좀 그만 내 ㅋㅋ']] },
+    { t:'세라언니♡', d:'06.10', b:'언니랑 노래방 감\n언니는 마이크만 잡아도 멋있음\n나도 3학년 되면 저렇게 될 수 있나', cmts:[['문세라','유란이는 유란이대로 해']] },
+    { t:'어제 일', d:'06.05', b:'어제 화낸 거 미안.\n근데 내가 틀린 건 아님.\n오늘 떡볶이는 내가 삼.' }
+  ],
+  photos:[
+    { cap:'방울끈 새로 삼', sub:'흰색', img:'' },
+    { cap:'세라언니랑', sub:'언니 얼굴은 가림 (언니가 가리래)', img:'' },
+    { cap:'4반 뒷자리', sub:'누가 찍힌 건 우연임', img:'' }
+  ],
+  guest:[
+    ['문세라','06.14','월요일 점심에 3학년 층으로 와','네 언니!!'],
+    ['길상현','06.13','4반 뒷자리 사진에 태혁이만 세 장인데?','우연이라고 했다'],
+    ['여자후배','06.11','언니 저번에 도와주셔서 감사해요ㅠㅠ','다음엔 니가 먼저 말해']
+  ],
+  ilchon:[['문세라','내 새끼'],['권태혁','.'],['육상진','해림에서 제일 티 나는 애']],
+  qna:['도유란','없음. 지어내지 마','해림고 2-4','166','짜증. 이유는 묻지 마','One More Time','떡볶이','뒤에서 말하는 거, 한 글자 대답','세라언니 따라 노래방','달리기, 팔씨름 (반칙은 안 함)','화나면 말 빨라짐','슬라이드','세라언니','없음. 진짜 없음. 키 큰 거 상관없음','없음','없다고!!!','세라언니 같은 사람','언니 졸업하는 거','앞에서 말해라','길상현 (조용히 좀 해봐)'] },
+
+{ id:'sera', name:'문세라', school:'haerim', cls:'3학년 5반', age:19, height:'165cm', tag:'해림 여짱',
+  img:'', title:'sera.', status:'조용히 보고 가.', mood:'여유', today:312, total:'88,203', bgm:'넬 - 기억을 걷는 시간',
+  lock:['seojin','baeksan'],
+  lockTrace:{ seojin:['일촌 신청 대기 목록','서진공고 ㅈㅇㅂ님 · 대기 3번째 신청','서진공고 ㅇㅂㄹ님 · "은비가 대신 눌러보래서요"'], baeksan:['일촌 신청 대기 목록','백산고 ㅅㅈㅎ님 · "누나 한 번만"','(답변: 거절)'] },
+  diary:[
+    { t:'새 얼굴', d:'06.13', b:'복도에 못 보던 애가 있더라.\n급하게 볼 건 없고.\n\n천천히 보면 다 보여.' },
+    { t:'D-', d:'06.09', b:'졸업까지 여덟 달.\n자리는 두고 가는 게 아니라\n맡기고 가는 거라서.', cmts:[['도유란','언니 가지 마요ㅠㅠ'],['문세라','울 시간에 주변을 봐']] },
+    { t:'태혁이', d:'06.01', b:'3학년 남자애들이 또 시끄럽길래\n한마디 해뒀다.\n\n걔 형한테 받은 게 있어서.' }
+  ],
+  photos:[
+    { cap:'얼짱 카페 시절', sub:'중3', img:'' },
+    { cap:'펌 다시 함', sub:'학주는 내가 피해 다님', img:'' },
+    { cap:'루즈삭스', sub:'', img:'' },
+    { cap:'일촌 공개', sub:'', img:'' }
+  ],
+  visitors:['서진공고 ㅈㅇㅂ님이 오늘 6번 다녀갔습니다 (잠금 화면)','해림 3학년 남학생 4명','해림 1학년 다수'],
+  guest:[
+    ['도유란','06.14','언니 사랑해요♡','그래 알아'],
+    ['해림1학년','06.13','선배님 머리 어디서 하세요??','알려주면 따라 할 거잖아 ㅎㅎ'],
+    ['3학년 남학생','06.12','세라야 2학년 짱 언제까지 봐줄 건데','내가 졸업할 때까지']
+  ],
+  ilchon:[['도유란','세상에서 제일 멋진 언니'],['권태혁','누나'],['육상진','해림에서 건드리면 안 되는 사람 1위']],
+  qna:null },
+
+/* ------------------------------ 서진공고 ------------------------------ */
+{ id:'seungho', name:'백승호', school:'seojin', cls:'2학년 기계과', age:18, height:'182cm', tag:'서진 짱',
+  img:'', title:'백승호님의 미니홈피', status:'알바 중. 급하면 전화해라', mood:'졸림', today:41, total:'5,032', bgm:'',
+  diary:[
+    { t:'공지', d:'04.20', b:'방명록에 싸움 신청 쓰지 마라.\n귀찮다.', cmts:[['위재곤','승호야 그럼 문자로 받냐'],['백승호','받지 마라']] }
+  ],
+  photos:[],
+  guest:[
+    ['위재곤','06.14','승호야 해림 새끼들 언제 조지냐','자라'],
+    ['동생','06.12','오빠 집에 올 때 우유','ㅇㅇ'],
+    ['서진1학년','06.10','형님 삥 뜯기는 애들 좀 봐주시면 안 됩니까','(답글 없음)'],
+    ['염보람','06.08','승호야 너는 싸이를 왜 만들었냐ㅋㅋㅋ','재곤이가 만듦']
+  ],
+  ilchon:[['위재곤','우리 짱'],['정은비','서진에서 제일 말 안 하는 애'],['염보람','맨날 졸고 있음ㅋㅋ']],
+  qna:null },
+
+{ id:'jaegon', name:'위재곤', school:'seojin', cls:'2학년 전기과', age:18, height:'179cm', tag:'행동대장 "미친개"',
+  img:'', title:'서진공고 미친개', status:'해림 교복 입고 들어오지 마라', mood:'빡침', today:63, total:'6,690', bgm:'버즈 - 남자를 몰라',
+  note:{ haerim:'해림이냐? 방명록 남기면 찾아간다.' },
+  guestBlock:{ haerim:'해림은 방명록 못 쓴다. 종점으로 와라.' },
+  diary:[
+    { t:'제보 받는다', d:'06.13', b:'굴다리에서 해림 교복 본 놈\n문자 해라.\n\n특히 와인색 머리.' , cmts:[['백승호','하지 마라'],['위재곤','보기만 할게'],['백승호','거짓말']] },
+    { t:'기름값', d:'06.09', b:'시티백 기름값 또 오름\n배달 세 건 더 뛰어야 됨\n\n사장님 사랑합니다', cmts:[['염보람','올 때 떡볶이도ㅋㅋㅋ'],['위재곤','배달비 내라']] },
+    { t:'약속', d:'05.30', b:'맞짱은 1:1이다.\n그거 깬 놈들은 사람 아니다.\n\n나는 안 잊는다.' }
+  ],
+  photos:[
+    { cap:'시티백', sub:'내 다리', img:'' },
+    { cap:'가죽자켓', sub:'여름에도 입음', img:'' },
+    { cap:'헬멧', sub:'배달 때만 씀', img:'' }
+  ],
+  guest:[
+    ['육상진','06.12','ㅋㅋ 무서워라~','너 종점으로 나와'],
+    ['백승호','06.11','방명록에서 싸우지 마라','ㅇㅇ 미안'],
+    ['염보람','06.10','재곤아 헬멧 좀 써라 진짜','배달할 땐 씀']
+  ],
+  ilchon:[['백승호','말려야 되는 놈'],['정은비','심부름은 잘함'],['염보람','시끄러운데 의리는 있음']],
+  qna:['위재곤','미친개','서진공고 전기과 2','179','빡침','남자를 몰라','배달하다 남는 짬뽕','해림. 약속 깨는 놈','버스 종점, 굴다리','(이하 귀찮아서 안 씀)','','','백승호','','','','','','승호 말 들어라','끝'] },
+
+{ id:'eunbi', name:'정은비', school:'seojin', cls:'2학년 디자인과', age:18, height:'163cm', tag:'서진 얼짱',
+  img:'', title:'은비 ♡', status:'예쁜 척 아니고 예쁜 거임', mood:'새침', today:388, total:'64,115', bgm:'원더걸스 - So Hot',
+  diary:[
+    { t:'서울', d:'06.13', b:'서울 가고 싶다.\n여기는 버스 타고 40분 가도\n다 아는 얼굴임.', cmts:[['염보람','나도 데려가ㅠㅠ'],['정은비','너는 당연히 같이 감']] },
+    { t:'사진', d:'06.08', b:'상진이랑 사진 찍음.\n끝.', cmts:[['육상진','끝?'],['정은비','끝']] },
+    { t:'그냥', d:'06.03', b:'해림 3학년 그 언니\n머리 어디서 하는 거임.\n\n궁금한 거 아님. 그냥 봤음.', cmts:[['염보람','너 어제도 그 언니 홈피 들어갔...'],['정은비','보람아 댓글 지워']] }
+  ],
+  photos:[
+    { cap:'셀카', sub:'각도 45도', img:'' },
+    { cap:'핑크 져지', sub:'교복 위에 입음', img:'' },
+    { cap:'머리핀', sub:'하늘색', img:'' },
+    { cap:'일촌 공개', sub:'', img:'', ilchon:true },
+    { cap:'일촌 공개', sub:'', img:'', ilchon:true }
+  ],
+  guest:[
+    ['서진 기계과','06.14','은비야 가방 들어줄까','ㅇㅇ 내일 교문'],
+    ['육상진','06.13','ㅇㅇ 이쁘네','성의 없어'],
+    ['염보람','06.12','오늘도 우리 은비가 제일 예뻤다','알아♡'],
+    ['서진 자동차과','06.11','일촌 받아주세요','줄 서']
+  ],
+  ilchon:[['염보람','내 단짝♡ 속은 여림 (비밀)'],['육상진','여친. 일단은.'],['위재곤','부탁이 아니라 명령임']],
+  qna:['정은비','서진 얼짱','서진공고 디자인과 2','163','새침','So Hot','떡볶이 (보람이랑)','나보다 예쁜 척하는 애','번화가','부탁하기 (다 들어줌)','거울 봄','슬라이드. 핑크','염보람','스펙','기억 안 남','남친 있음','서울에 있음','없음. (있어도 안 씀)','줄 서','염보람'] },
+
+{ id:'boram', name:'염보람', school:'seojin', cls:'2학년 디자인과', age:18, height:'154cm', tag:'은비 단짝',
+  img:'', title:'보람찬 하루!!', status:'은비 옆에 걔 맞음ㅋㅋ', mood:'설렘', today:44, total:'4,890', bgm:'SG워너비 - 라라라',
+  diary:[
+    { t:'미쳤음', d:'06.14', b:'오늘 버스에서 백산 교복 봤는데\n진짜 미쳤음\n머리 길고 조끼 입은 사람\n\n숨 못 쉼', cmts:[['정은비','너 저번 주엔 해림이라며'],['염보람','그건 저번 주고!!!']] },
+    { t:'은비랑', d:'06.10', b:'은비랑 있으면 나도 좀 세지는 기분\n혼자 있으면 그냥 나임\n\n암튼 떡볶이 맛있었음' },
+    { t:'바람막이', d:'06.04', b:'흰색 바람막이 새로 삼\n교복 넥타이는 가방에 있음 (안 맴)' }
+  ],
+  photos:[
+    { cap:'은비랑 스티커사진', sub:'은비가 가운데', img:'' },
+    { cap:'노란 머리핀', sub:'', img:'' }
+  ],
+  guest:[
+    ['정은비','06.14','백산 걔 누군지 알아냈어?','아직ㅠㅠ 알아봐줘'],
+    ['위재곤','06.12','떡볶이 값 내라','다음 달에ㅋㅋ']
+  ],
+  ilchon:[['정은비','내 편'],['위재곤','떡볶이 도둑'],['백승호','말 많음']],
+  qna:['염보람','토끼','서진공고 디자인과 2','154 (155임)','설렘!!','라라라','떡볶이 순대 튀김 전부','분위기 싸해지는 거','번화가, 은비네 반','리액션','잘생긴 사람 보면 말 없어짐','폴더. 고리 다섯 개','정은비♡','잘생기면 됨. 키 크면 더 좋음. 머리 길어도 됨','유치원','이번 주는 백산','은비 옆에 있음','은비가 나 안 놀아주는 거','방명록 써주면 다 답글 달아줌!','은비 (안 쓸 거 알지만)'] },
+
+/* ------------------------------ 백산고 ------------------------------ */
+{ id:'kyunghwan', name:'이경환', school:'baeksan', cls:'3학년 3반', age:19, height:'180cm', tag:'백산 공동짱',
+  img:'', title:'.', status:'', mood:'-', today:5, total:'611', bgm:'',
+  diaryAllLock:true,
+  diary:[],
+  photos:[],
+  guestOpen:['baeksan'],
+  guest:[
+    ['소지헌','06.13','경환아 다이어리 좀 써라. 인생이 그게 뭐냐','꺼져'],
+    ['길성민','06.12','ㅇ','ㅇ'],
+    ['소지헌','06.10','방명록 닫아놓고 우리한테만 여는 거 좀 감동인데','실수다']
+  ],
+  ilchon:[['소지헌','우리 중에 제일 차가운 놈'],['길성민','ㅇ']],
+  qna:null },
+
+{ id:'jiheon', name:'소지헌', school:'baeksan', cls:'3학년 6반', age:19, height:'183cm', tag:'백산 공동짱',
+  img:'', title:"Jiheon's Room ― 지헌의 방", status:'떠나는 사람은 붙잡지 않는다. 문만 열어둔다.', mood:'여유', today:176, total:'40,028', bgm:'에픽하이 - One',
+  diary:[
+    { t:'오늘의 한 줄', d:'06.14', b:'진짜 강한 사람은\n주먹을 쥐지 않는다.\n주머니에 넣어둔다.', cmts:[['이경환','이거 지난주 서점에서 본 책에 있던데'],['소지헌','우연이야'],['길성민','ㅋ']] },
+    { t:'오늘의 한 줄', d:'06.11', b:'비 오는 날엔\n우산보다 사람이 먼저 떠오른다.', cmts:[['여자1','오빠 누구 생각해요??'],['소지헌','비밀']] },
+    { t:'오늘의 한 줄', d:'06.07', b:'싸움은 보여주는 순간 끝난다.\n소문이 대신 싸우게 둬라.', cmts:[['이경환','이건 몇 페이지냐']] },
+    { t:'셋', d:'06.01', b:'경환이, 성민이.\n순서는 없다. 셋이다.' }
+  ],
+  photos:[
+    { cap:'비 오는 창가', sub:'분위기', img:'' },
+    { cap:'니트 조끼', sub:'남색', img:'' },
+    { cap:'묵주 팔찌', sub:'', img:'' },
+    { cap:'뒷모습', sub:'성민이가 찍어줌 (18장 중 1장)', img:'' }
+  ],
+  guest:[
+    ['여자1','06.14','오빠 오늘 글 너무 좋아요ㅠㅠ','고마워. 우산 챙겨'],
+    ['여자2','06.13','지헌 오빠 일촌평 써주세요','줄이 좀 길어서'],
+    ['해림 3학년','06.12','세라가 니 일촌 신청 또 거절했다던데ㅋㅋ','타이밍이 아닐 뿐이야'],
+    ['이경환','06.11','책 제목이나 대라','(답글 없음)']
+  ],
+  ilchon:[['이경환','허세'],['길성민','옆자리'],['여자1','백산에서 제일 다정한 오빠']],
+  qna:['소지헌','없어. 이름이면 충분하지','백산고 3-6','183','여유','One','누가 해준 밥','폼 안 나는 싸움','비 오는 날 창가','유도, 말로 정리하기','대답 전에 뜸 들임','슬라이드. 검정','경환이, 성민이','나를 궁금해하는 사람','지나간 건 묻지 않는 거야','글쎄','지금이랑 비슷하게 멋있을 듯','없어','떠나도 문은 열어둘게','이경환 (안 쓸 걸 알지만)'] },
+
+{ id:'sungmin', name:'길성민', school:'baeksan', cls:'3학년 6반', age:19, height:'179cm', tag:'백산 공동짱 · 상현 형',
+  img:'', title:'ㅇ', status:'말 걸지 마', mood:'지루', today:22, total:'2,907', bgm:'',
+  diary:[
+    { t:'엑시브', d:'06.12', b:'타이어 갈았다.', cmts:[['소지헌','면허는'],['길성민','ㅇ'],['소지헌','그게 대답이냐']] },
+    { t:'길상현', d:'06.05', b:'내 이름 팔고 다니면 뒤진다.\n\n근데 걔 건드리는 놈은 더 뒤진다.', cmts:[['길상현','형...♡'],['길성민','하트 지워']] }
+  ],
+  photos:[
+    { cap:'엑시브', sub:'', img:'' },
+    { cap:'ㅇ', sub:'지헌이가 올리래서 올림', img:'' }
+  ],
+  guest:[
+    ['길상현','06.13','형 나 해림 4대천왕 됐어!!','누가 정함'],
+    ['소지헌','06.11','성민아 방명록 답글 두 글자 넘겨봐','싫다'],
+    ['모르는 사람','06.09','백산 별거 없던데요ㅋ','어디냐 지금']
+  ],
+  ilchon:[['소지헌','말은 없는데 제일 먼저 움직임'],['이경환','.'],['길상현','우리 형!!!']],
+  qna:null }
+];
+/* ============================ DATA 끝 ============================ */
+
+const S = { viewer:null, cur:null, tab:'home', extra:{} };
+const $ = (s,r=document)=>r.querySelector(s);
+const esc = s => String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const byId = id => CHARS.find(c=>c.id===id);
+const isLocked = c => (c.lock||[]).includes(S.viewer);
+const bg = u => u ? ` style="background-image:url('${esc(u)}')"` : '';
+
+function toast(msg){
+  document.querySelectorAll('.toast').forEach(t=>t.remove());
+  const t=document.createElement('div'); t.className='toast'; t.setAttribute('role','status'); t.textContent=msg;
+  document.body.appendChild(t); setTimeout(()=>t.remove(),2600);
+}
+
+/* ---------- 입장 화면 ---------- */
+function renderGate(){
+  document.body.className='';
+  $('#app').classList.add('hidden');
+  const g=$('#gate'); g.classList.remove('hidden');
+  g.innerHTML=`<div class="gate-box">
+    <div class="gate-top"><span>BUDDYWORLD 버디월드 :: 미니홈피</span><span>${esc(SITE.today)}</span></div>
+    <div class="gate-body">
+      <div class="logo">BUDDY<b>WORLD</b></div>
+      <div class="gate-q">${esc(SITE.ask)}</div>
+      <p class="gate-sub">교복을 고르면 그 학교 학생으로 접속됩니다. 학교에 따라 보이는 홈피가 달라요.</p>
+      <div class="schools">${Object.entries(SCHOOLS).map(([k,s])=>`
+        <button class="sch" data-s="${k}">
+          <div class="sch-band">${s.band.map(c=>`<i style="background:${c}"></i>`).join('')}</div>
+          <div class="sch-in">
+            <div class="sch-name">${esc(s.name)}</div>
+            <div class="sch-kind">${esc(s.kind)}</div>
+            <p class="sch-desc">${esc(s.desc)}</p>
+            <div class="sch-go">이 교복 입고 접속 &gt;</div>
+          </div>
+        </button>`).join('')}
+      </div>
+      <div class="gate-foot">버스로 30~40분. 소문은 하루면 세 학교에 다 퍼집니다.</div>
+    </div></div>`;
+  g.querySelectorAll('.sch').forEach(b=>b.onclick=()=>enter(b.dataset.s));
+}
+function enter(school){
+  S.viewer=school; S.tab='home';
+  S.cur = CHARS.find(c=>c.school===school).id;
+  document.body.className='sk-'+school;
+  $('#gate').classList.add('hidden'); $('#app').classList.remove('hidden');
+  renderApp(); window.scrollTo(0,0);
+}
+
+/* ---------- 본 화면 ---------- */
+function renderApp(){
+  const order=[S.viewer,...Object.keys(SCHOOLS).filter(k=>k!==S.viewer)];
+  $('#app').innerHTML=`
+    <div class="bar"><span class="logo">BUDDY<b>WORLD</b></span>
+      <span class="who"><b>${esc(SCHOOLS[S.viewer].name)}</b> 학생으로 접속 중</span>
+      <button id="chg">교복 갈아입기</button></div>
+    <div class="layout">
+      <nav class="roster" aria-label="미니홈피 목록"><h2>미니홈피 바로가기</h2>
+        ${order.map(k=>`<div class="rgroup"><div class="rlabel">${esc(SCHOOLS[k].name)}${k===S.viewer?' <span>우리 학교</span>':''}</div>
+          ${CHARS.filter(c=>c.school===k).map(c=>`
+            <button class="rrow${c.id===S.cur?' on':''}" data-id="${c.id}">
+              <span class="rav"${bg(c.img)}>${c.img?'':esc(c.name[0])}</span>
+              <span class="rtx"><span class="rname">${esc(c.name)}</span><span class="rsub">${esc(c.tag)}</span></span>
+              ${isLocked(c)?'<span class="rtag">일촌공개</span>':''}
+            </button>`).join('')}</div>`).join('')}
+      </nav>
+      <section class="hompy" id="hompy"></section>
+    </div>
+    <div class="foot">BUDDYWORLD는 이 작품을 위해 만든 가상의 서비스입니다. 등장인물·학교·게시물은 전부 허구입니다.</div>`;
+  $('#chg').onclick=renderGate;
+  document.querySelectorAll('.rrow').forEach(b=>b.onclick=()=>go(b.dataset.id));
+  renderHompy();
+}
+function go(id){
+  S.cur=id; S.tab='home';
+  document.querySelectorAll('.rrow').forEach(b=>b.classList.toggle('on',b.dataset.id===id));
+  renderHompy();
+  const on=$('.rrow.on'); if(on&&on.scrollIntoView) on.scrollIntoView({block:'nearest',inline:'center'});
+}
+
+function renderHompy(){
+  const c=byId(S.cur), h=$('#hompy'), same=c.school===S.viewer;
+  const head=`<div class="htitle"><h1>${esc(c.title)}</h1>
+    <div class="hcount">TODAY <b>${esc(c.today)}</b> · TOTAL ${esc(c.total)}</div></div>`;
+  if(isLocked(c)){
+    const tr=(c.lockTrace||{})[S.viewer];
+    h.innerHTML=head+`<div class="locked">
+      <div class="pic" style="width:120px;margin:0 auto"${bg(c.img)}>${c.img?'':'[ 프로필 사진 ]'}</div>
+      <div class="big">일촌에게만 공개된 미니홈피입니다</div>
+      <p>${esc(c.name)}님은 ${esc(SCHOOLS[c.school].name)} 학생에게만 홈피를 열어두었습니다.</p>
+      <p>${esc(SCHOOLS[S.viewer].name)} 교복으로는 여기까지입니다.</p>
+      ${tr?`<div class="trace"><b>${esc(tr[0])}</b><br>${tr.slice(1).map(esc).join('<br>')}</div>`:''}
+    </div>`;
+    return;
+  }
+  const note=(c.note||{})[S.viewer];
+  const status=(!same&&c.statusBy&&c.statusBy.other)||c.status;
+  const tabs=[['home','홈'],['diary','다이어리',c.diaryAllLock?'잠김':c.diary.length],['photo','사진첩',c.photos.length],['guest','방명록',c.guest.length],['profile','프로필']];
+  h.innerHTML=head+(note?`<div class="hnote">${esc(note)}</div>`:'')+`
+    <div class="hbody">
+      <aside class="side">
+        <div class="pic"${bg(c.img)}>${c.img?'':'[ 프로필 사진<br>1:1 ]'}</div>
+        <div class="mood">TODAY IS... <b>${esc(c.mood)}</b></div>
+        <div class="status">${esc(status)||'&nbsp;'}</div>
+        <dl class="meta">
+          <div><dt>이름</dt><dd>${esc(c.name)}</dd></div>
+          <div><dt>학교</dt><dd>${esc(SCHOOLS[c.school].name)}</dd></div>
+          <div><dt>소속</dt><dd>${esc(c.cls)}</dd></div>
+        </dl>
+        <div class="bgm"><div class="bgm-t">BGM</div>${c.bgm?`<div class="bgm-s"><span>♬ ${esc(c.bgm)} ♬</span></div>`:'<div>설정된 배경음악이 없습니다</div>'}</div>
+        <select class="wave" aria-label="일촌 파도타기"><option value="">일촌 파도타기 ~</option>
+          ${CHARS.filter(x=>x.id!==c.id).map(x=>`<option value="${x.id}">${esc(SCHOOLS[x.school].name)} · ${esc(x.name)}</option>`).join('')}</select>
+      </aside>
+      <div class="main">
+        <div class="tabs" role="tablist">${tabs.map(t=>`<button class="tab${S.tab===t[0]?' on':''}" role="tab" data-t="${t[0]}">${t[1]}${t[2]!==undefined?` <small>(${t[2]})</small>`:''}</button>`).join('')}</div>
+        <div class="pane" id="pane"></div>
+      </div>
+    </div>`;
+  $('.wave',h).onchange=e=>{ if(e.target.value) go(e.target.value); };
+  h.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{ S.tab=b.dataset.t; h.querySelectorAll('.tab').forEach(x=>x.classList.toggle('on',x===b)); renderPane(); });
+  renderPane();
+}
+
+const cmtHtml = cs => (cs||[]).map(x=>`<div class="cmt"><b>${esc(x[0])}</b> ${esc(x[1])}</div>`).join('');
+
+function renderPane(){
+  const c=byId(S.cur), p=$('#pane'), same=c.school===S.viewer;
+  const guestOpen=!c.guestOpen||c.guestOpen.includes(S.viewer);
+  const mine=S.extra[c.id]||[];
+  if(S.tab==='home'){
+    const recent=[...c.diary.filter(d=>!d.lock).slice(0,3).map(d=>[d.d,'[다이어리] '+d.t]),...c.photos.slice(0,2).map(x=>[x.sub||'','[사진첩] '+x.cap])];
+    p.innerHTML=`
+      <div class="sec"><h3>최근 게시물 <span>${c.diaryNote?esc(c.diaryNote):''}</span></h3>
+        ${c.diaryAllLock?'<div class="empty">모든 게시물이 비공개입니다.</div>':recent.length?`<ul class="list">${recent.map(r=>`<li><span class="t">${esc(r[1])}</span><span class="d">${esc(r[0])}</span></li>`).join('')}</ul>`:'<div class="empty">등록된 게시물이 없습니다.</div>'}
+      </div>
+      ${c.visitors&&same?`<div class="sec"><h3>방문자 추적기 <span>주인장 전용 위젯 · 켜져 있음</span></h3><ul class="list">${c.visitors.map(v=>`<li><span class="t">${esc(v)}</span></li>`).join('')}</ul></div>`:''}
+      <div class="sec"><h3>일촌평 <span>${c.ilchon.length}명</span></h3>
+        <ul class="list ilchon">${c.ilchon.map(i=>`<li><b>${esc(i[0])}</b> ${esc(i[1])}</li>`).join('')}</ul></div>`;
+  }
+  else if(S.tab==='diary'){
+    if(c.diaryAllLock) p.innerHTML='<div class="empty">다이어리 전체가 비공개로 설정되어 있습니다.<br>일촌에게도 열려 있지 않습니다.</div>';
+    else if(!c.diary.length) p.innerHTML='<div class="empty">등록된 게시물이 없습니다.</div>';
+    else p.innerHTML=(c.diaryNote?`<div class="sec"><h3>다이어리 <span>${esc(c.diaryNote)}</span></h3></div>`:'')+c.diary.map(d=>d.lock
+      ?`<article class="post lock"><div class="post-h">${esc(d.t)} <span>${esc(d.d)}</span></div><div class="post-b">비공개 글입니다. 주인장만 볼 수 있습니다.</div></article>`
+      :`<article class="post"><div class="post-h">${esc(d.t)} <span>${esc(d.d)}</span></div><div class="post-b">${esc(d.b)}</div>${cmtHtml(d.cmts)}</article>`).join('');
+  }
+  else if(S.tab==='photo'){
+    p.innerHTML=c.photos.length?`<div class="photos">${c.photos.map(x=>{
+      const lk=(x.ilchon||x.cap==='일촌 공개')&&!same;
+      return lk?`<figure class="ph lock" style="margin:0"><div class="ph-i">일촌 공개<br>사진입니다</div><figcaption class="ph-c">잠긴 사진</figcaption></figure>`
+        :`<figure class="ph" style="margin:0"><div class="ph-i"${bg(x.img)}>${x.img?'':'[ 사진 4:3 ]'}</div><figcaption class="ph-c">${esc(x.cap==='일촌 공개'?'우리끼리만':x.cap)}<small>${esc(x.sub)}</small></figcaption>${cmtHtml(x.cmts)}</figure>`;}).join('')}</div>`
+      :'<div class="empty">등록된 사진이 없습니다.</div>';
+  }
+  else if(S.tab==='guest'){
+    if(!guestOpen){ p.innerHTML='<div class="empty">방명록이 닫혀 있습니다.<br>주인장이 허락한 일촌에게만 보입니다.</div>'; return; }
+    p.innerHTML=`<form class="gform"><input type="text" maxlength="60" placeholder="방명록 한 줄 남기기" aria-label="방명록 입력"><button>등록</button></form>
+      ${mine.map(m=>`<div class="g"><div class="g-h"><b>${esc(SCHOOLS[S.viewer].name)} 익명</b><span>방금</span></div><div class="g-b">${esc(m)}</div></div>`).join('')}
+      ${c.guest.map(g=>`<div class="g"><div class="g-h"><b>${esc(g[0])}</b><span>${esc(g[1])}</span></div><div class="g-b">${esc(g[2])}</div>${g[3]?`<div class="g-r">${g[3].startsWith('(')?'':`<b>${esc(c.name)}</b> `}${esc(g[3])}</div>`:''}</div>`).join('')}`;
+    $('.gform',p).onsubmit=e=>{
+      e.preventDefault();
+      const block=(c.guestBlock||{})[S.viewer];
+      if(block){ toast(block); return; }
+      const v=$('input',p).value.trim(); if(!v) return;
+      (S.extra[c.id]=S.extra[c.id]||[]).unshift(v); renderPane();
+      toast(same?'방명록이 등록되었습니다.':'타교생 방명록으로 등록되었습니다. 소문은 내일 퍼집니다.');
+    };
+  }
+  else{
+    p.innerHTML=`<div class="stat">
+        <div><small>이름</small>${esc(c.name)}</div><div><small>나이</small>${esc(c.age)}세</div>
+        <div><small>키</small>${esc(c.height)}</div><div><small>소속</small>${esc(SCHOOLS[c.school].name)} ${esc(c.cls)}</div>
+        <div><small>통하는 이름</small>${esc(c.tag)}</div></div>
+      <div class="sec"><h3>20문 20답</h3>
+      ${c.qna?`<dl class="qna">${QUESTIONS.map((q,i)=>`<div><dt>${i+1}. ${esc(q)}</dt><dd>${esc(c.qna[i])||'&nbsp;'}</dd></div>`).join('')}</dl>`
+        :'<div class="empty">작성된 문답이 없습니다.<br>바통을 받았지만 넘기지 않았습니다.</div>'}</div>`;
+  }
+}
+
+renderGate();
+</script>
+</body>
+</html>
