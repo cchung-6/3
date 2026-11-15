@@ -182,6 +182,17 @@ a{color:var(--main)}
   body{font-size:14px}
 }
 @media (prefers-reduced-motion:reduce){.bgm-s span{animation:none;padding-left:0}}
+/* 이미지 */
+.pic,.ph-i,.rav{position:relative;overflow:hidden}
+.im{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+.ph-i.zoom{cursor:zoom-in}
+.view{position:fixed;inset:0;z-index:60;background:rgba(20,28,40,.72);display:flex;align-items:center;justify-content:center;padding:16px}
+.view-in{background:#fff;border:1px solid var(--line);border-radius:var(--r);overflow:hidden;max-width:min(920px,100%);max-height:100%;display:flex;flex-direction:column;box-shadow:6px 6px 0 rgba(0,0,0,.25)}
+.view-top{display:flex;justify-content:space-between;align-items:center;background:var(--main);color:#fff;padding:5px 10px;font-size:12px;font-weight:700}
+.view-x{background:#fff;color:var(--deep);border:0;border-radius:4px;width:22px;height:20px;font-size:11px;font-weight:700;line-height:1}
+.view-in img{display:block;max-width:100%;max-height:calc(100vh - 130px);object-fit:contain;background:#111}
+.view-cap{padding:8px 12px;font-size:13px}
+.view-cap span{color:var(--sub);font-size:12px;margin-left:6px}
 /* 둥근 테두리 */
 .gate-box,.hompy,.roster{border-radius:var(--r);overflow:hidden}
 .roster{overflow:auto}
@@ -491,7 +502,9 @@ const $ = (s,r=document)=>r.querySelector(s);
 const esc = s => String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const byId = id => CHARS.find(c=>c.id===id);
 const isLocked = c => (c.lock||[]).includes(S.viewer);
-const bg = u => u ? ` style="background-image:url('${esc(u)}')"` : '';
+const pic = (u,alt) => u ? `<img class="im" src="${esc(u)}" alt="${esc(alt||'')}" loading="lazy" onload="this.parentNode.classList.add('zoom')" onerror="this.remove()">` : '';
+/* 이미지 경로 자동 지정: img/아이디.png (프로필 1:1) · img/아이디_번호.png (사진첩 4:3) */
+CHARS.forEach(c=>{ if(!c.img) c.img=`img/${c.id}.png`; c.photos.forEach((x,i)=>{ if(!x.img) x.img=`img/${c.id}_${i+1}.png`; }); });
 
 function toast(msg){
   document.querySelectorAll('.toast').forEach(t=>t.remove());
@@ -545,7 +558,7 @@ function renderApp(){
         ${order.map(k=>`<div class="rgroup"><div class="rlabel">${esc(SCHOOLS[k].name)}${k===S.viewer?' <span>우리 학교</span>':''}</div>
           ${CHARS.filter(c=>c.school===k).map(c=>`
             <button class="rrow${c.id===S.cur?' on':''}" data-id="${c.id}">
-              <span class="rav"${bg(c.img)}>${c.img?'':esc(c.name[0])}</span>
+              <span class="rav">${esc(c.name[0])}${pic(c.img,c.name)}</span>
               <span class="rtx"><span class="rname">${esc(c.name)}</span><span class="rsub">${esc(c.tag)}</span></span>
               ${isLocked(c)?'<span class="rtag">일촌공개</span>':''}
             </button>`).join('')}</div>`).join('')}
@@ -571,7 +584,7 @@ function renderHompy(){
   if(isLocked(c)){
     const tr=(c.lockTrace||{})[S.viewer];
     h.innerHTML=head+`<div class="locked">
-      <div class="pic" style="width:120px;margin:0 auto"${bg(c.img)}>${c.img?'':'[ 프로필 사진 ]'}</div>
+      <div class="pic" style="width:120px;margin:0 auto">[ 프로필 사진 ]${pic(c.img,c.name)}</div>
       <div class="big">일촌에게만 공개된 미니홈피입니다</div>
       <p>${esc(c.name)}님은 ${esc(SCHOOLS[c.school].name)} 학생에게만 홈피를 열어두었습니다.</p>
       <p>${esc(SCHOOLS[S.viewer].name)} 교복으로는 여기까지입니다.</p>
@@ -585,7 +598,7 @@ function renderHompy(){
   h.innerHTML=head+(note?`<div class="hnote">${esc(note)}</div>`:'')+`
     <div class="hbody">
       <aside class="side">
-        <div class="pic"${bg(c.img)}>${c.img?'':'[ 프로필 사진<br>1:1 ]'}</div>
+        <div class="pic">[ 프로필 사진<br>1:1 ]${pic(c.img,c.name+' 프로필 사진')}</div>
         <div class="mood">TODAY IS... <b>${esc(c.mood)}</b></div>
         <div class="status">${fmt(status)||'&nbsp;'}</div>
         <dl class="meta">
@@ -639,10 +652,11 @@ function renderPane(){
     p.innerHTML=c.photos.length?`<div class="photos">${c.photos.map(x=>{
       const lk=(x.ilchon||x.cap==='일촌 공개')&&!same;
       return lk?`<figure class="ph lock" style="margin:0"><div class="ph-i">일촌 공개<br>사진입니다</div><figcaption class="ph-c">잠긴 사진</figcaption></figure>`
-        :`<figure class="ph" style="margin:0"><div class="ph-i"${bg(x.img)}>${x.img?'':'[ 사진 4:3 ]'}</div><figcaption class="ph-c">${esc(x.cap==='일촌 공개'?'우리끼리만':x.cap)}<small>${esc(x.sub)}</small></figcaption>${cmtHtml(x.cmts)}</figure>`;}).join('')}</div>`
+        :`<figure class="ph" style="margin:0"><div class="ph-i" data-cap="${esc(x.cap==='일촌 공개'?'우리끼리만':x.cap)}" data-sub="${esc(x.sub)}">[ 사진 4:3 ]${pic(x.img,x.cap)}</div><figcaption class="ph-c">${esc(x.cap==='일촌 공개'?'우리끼리만':x.cap)}<small>${esc(x.sub)}</small></figcaption>${cmtHtml(x.cmts)}</figure>`;}).join('')}</div>`
       :'<div class="empty">등록된 사진이 없습니다.</div>';
   }
-  else if(S.tab==='guest'){
+  if(S.tab==='photo') p.querySelectorAll('.ph-i').forEach(b=>{ b.onclick=()=>{ const im=b.querySelector('.im'); if(im&&b.classList.contains('zoom')) openView(im.src,b.dataset.cap,b.dataset.sub); }; });
+  if(S.tab==='guest'){
     if(!guestOpen){ p.innerHTML='<div class="empty">방명록이 닫혀 있습니다.<br>주인장이 허락한 일촌에게만 보입니다.</div>'; return; }
     p.innerHTML=`<form class="gform"><input type="text" maxlength="60" placeholder="방명록 한 줄 남기기" aria-label="방명록 입력"><button>등록</button></form>
       ${mine.map(m=>`<div class="g"><div class="g-h"><b>${esc(SCHOOLS[S.viewer].name)} 익명</b><span>방금</span></div><div class="g-b">${esc(m)}</div></div>`).join('')}
@@ -656,7 +670,7 @@ function renderPane(){
       toast(same?'방명록이 등록되었습니다.':'타교생 방명록으로 등록되었습니다. 소문은 내일 퍼집니다.');
     };
   }
-  else{
+  else if(S.tab==='profile'){
     p.innerHTML=`<div class="stat">
         <div><small>이름</small>${esc(c.name)}</div><div><small>나이</small>${esc(c.age)}세</div>
         <div><small>키</small>${esc(c.height)}</div><div><small>소속</small>${esc(SCHOOLS[c.school].name)} ${esc(c.cls)}</div>
@@ -666,6 +680,16 @@ function renderPane(){
         :'<div class="empty">작성된 문답이 없습니다.<br>바통을 받았지만 넘기지 않았습니다.</div>'}</div>`;
   }
 }
+
+function openView(src,cap,sub){
+  closeView();
+  const v=document.createElement('div'); v.className='view'; v.setAttribute('role','dialog'); v.setAttribute('aria-label','사진 크게 보기');
+  v.innerHTML=`<div class="view-in"><div class="view-top"><span>사진 보기</span><button class="view-x" aria-label="닫기">X</button></div><img src="${esc(src)}" alt="${esc(cap)}"><div class="view-cap"><b>${esc(cap)}</b>${sub?` <span>${esc(sub)}</span>`:''}</div></div>`;
+  v.onclick=e=>{ if(e.target===v||e.target.classList.contains('view-x')) closeView(); };
+  document.body.appendChild(v); v.querySelector('.view-x').focus();
+}
+function closeView(){ document.querySelectorAll('.view').forEach(v=>v.remove()); }
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeView(); });
 
 renderGate();
 </script>
