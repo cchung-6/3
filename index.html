@@ -183,6 +183,8 @@ a{color:var(--main)}
 }
 @media (prefers-reduced-motion:reduce){.bgm-s span{animation:none;padding-left:0}}
 /* 이미지 */
+.def{position:absolute;inset:0;width:100%;height:100%;display:block}
+.pic{padding:0}
 .pic,.ph-i,.rav{position:relative;overflow:hidden}
 .im{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
 .ph-i.zoom{cursor:zoom-in}
@@ -215,7 +217,8 @@ a{color:var(--main)}
 <script>
 /* =====================================================================
    DATA — 내용은 여기만 고치면 됨
-   · img / photos[].img 에 이미지 URL 넣으면 자리표시 대신 사진이 뜸
+   · 프로필: img/아이디.png 파일이 있으면 자동으로 뜨고, 없으면 기본 프로필
+     img:'none' 이면 파일이 있어도 기본 프로필 고정 (권태혁·이경환)
    · lock:[학교] → 그 학교로 접속하면 홈피 전체가 일촌공개로 잠김
    · open:[학교] → 그 학교로 접속했을 때만 보임
    · 다이어리 꾸미기: **굵게** / {r:빨강} {b:파랑} {p:분홍} {g:회색} {o:주황} {v:보라} / {L:크게} {S:작게} {U:밑줄}
@@ -237,12 +240,12 @@ const QUESTIONS = ['이름','별명','학교 / 반','키','지금 기분','요�
 const CHARS = [
 /* ------------------------------ 해림고 ------------------------------ */
 { id:'taehyuk', name:'권태혁', school:'haerim', cls:'2학년 4반', age:18, height:'182cm', tag:'해림 짱',
-  img:'', title:'권태혁님의 미니홈피', status:'', mood:'-', today:87, total:'9,120', bgm:'',
+  img:'none', title:'권태혁님의 미니홈피', status:'', mood:'-', today:87, total:'9,120', bgm:'',
   diary:[],
   photos:[{ cap:'제목 없음', sub:'2008.03.02', img:'', cmts:[['길상현','야 이거 내가 찍어준 건데 제목 좀 써라'],['육상진','표정 봐라 ㅋㅋㅋ 증명사진이냐']] }],
   guest:[
     ['육상진','06.13','살아있냐 ㅋㅋ 방명록 답 좀 달아라 일촌평이라도'],
-    ['도유란','06.12','야 권태혁 너 어제 ... 아 아니다 됐어'],
+    ['도유란','06.12','야 권태혁 너 메세지 잘 안보냐?'],
     ['해림1학년','06.11','선배님 일촌 신청 넣었는데 두 달째 대기중입니다ㅠㅠ'],
     ['문세라','06.09','태혁아 밥은 먹고 다니니~ 누나가 보고 있다'],
     ['서진 ㅇㅈㄱ','06.07','종점으로 나와라','(답글 없음. 다음 날 방명록은 그대로였다.)']
@@ -263,7 +266,7 @@ const CHARS = [
     { cap:'머리 다시 함', sub:'학주한텐 원래 이 색이라고 함', img:'' }
   ],
   guest:[
-    ['여사친2','06.14','상진아 오늘 노래방 가? 나 지금 번화가'],
+    ['여사친2','06.14','상진아 연락 좀 해~ㅎㅎ'],
     ['정은비','06.13','그 사진 내려. 내 얼굴 이상하게 나왔잖아','ㅇㅇ (안 내림)'],
     ['길상현','06.12','야 너는 왜 여자애들이 방명록을 쓰냐 비결 좀','얼굴'],
     ['서진 ㅇㅈㄱ','06.10','면상 치워라','ㅋㅋ 무서워라~']
@@ -310,8 +313,7 @@ const CHARS = [
   ],
   diaryNote:'비공개 글 37개',
   photos:[
-    { cap:'하늘', sub:'학교 옥상 가는 계단에서', img:'' },
-    { cap:'우리 반 친구들', sub:'나는 찍어주는 사람^^', img:'' }
+    { cap:'하늘', sub:'학교 옥상 가는 계단에서', img:'' }
   ],
   guest:[
     ['길상현','06.14','똥대호 월요일에 체육복 두 벌','응 챙길게 ^^'],
@@ -330,11 +332,11 @@ const CHARS = [
   photos:[
     { cap:'방울끈 새로 삼', sub:'흰색', img:'' },
     { cap:'세라언니랑', sub:'언니 얼굴은 가림 (언니가 가리래)', img:'' },
-    { cap:'4반 뒷자리', sub:'누가 찍힌 건 우연임', img:'' }
+    { cap:'4반 뒷자리', sub:'', img:'' }
   ],
   guest:[
     ['문세라','06.14','월요일 점심에 3학년 층으로 와','네 언니!!'],
-    ['길상현','06.13','4반 뒷자리 사진에 태혁이만 세 장인데?','우연이라고 했다'],
+    ['길상현','06.13','4반 뒷자리 사진에 태혁이만 세 장인데?','우연이야'],
     ['여자후배','06.11','언니 저번에 도와주셔서 감사해요ㅠㅠ','다음엔 니가 먼저 말해']
   ],
   ilchon:[['문세라','내 새끼'],['육상진','해림에서 제일 티 나는 애'],['길상현','무서움']],
@@ -441,7 +443,7 @@ const CHARS = [
 
 /* ------------------------------ 백산고 ------------------------------ */
 { id:'kyunghwan', name:'이경환', school:'baeksan', cls:'3학년 3반', age:19, height:'180cm', tag:'백산 공동짱',
-  img:'', title:'이경환님의 미니홈피', status:'', mood:'-', today:5, total:'611', bgm:'',
+  img:'none', title:'이경환님의 미니홈피', status:'', mood:'-', today:5, total:'611', bgm:'',
   diaryAllLock:true,
   diary:[],
   photos:[],
@@ -502,8 +504,10 @@ const $ = (s,r=document)=>r.querySelector(s);
 const esc = s => String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const byId = id => CHARS.find(c=>c.id===id);
 const isLocked = c => (c.lock||[]).includes(S.viewer);
-const pic = (u,alt) => u ? `<img class="im" src="${esc(u)}" alt="${esc(alt||'')}" loading="lazy" onload="this.parentNode.classList.add('zoom')" onerror="this.remove()">` : '';
+const DEF = '<svg class="def" viewBox="0 0 100 100" aria-hidden="true"><rect width="100" height="100" fill="#dfe5ec"/><circle cx="50" cy="39" r="18" fill="#fff"/><path d="M14 100c2-26 17-38 36-38s34 12 36 38z" fill="#fff"/></svg>';
+const pic = (u,alt) => (u&&u!=='none') ? `<img class="im" src="${esc(u)}" alt="${esc(alt||'')}" loading="lazy" onload="this.parentNode.classList.add('zoom')" onerror="this.remove()">` : '';
 /* 이미지 경로 자동 지정: img/아이디.png (프로필 1:1) · img/아이디_번호.png (사진첩 4:3) */
+/* img:'none' → 사진 없이 기본 프로필 고정 */
 CHARS.forEach(c=>{ if(!c.img) c.img=`img/${c.id}.png`; c.photos.forEach((x,i)=>{ if(!x.img) x.img=`img/${c.id}_${i+1}.png`; }); });
 
 function toast(msg){
@@ -558,7 +562,7 @@ function renderApp(){
         ${order.map(k=>`<div class="rgroup"><div class="rlabel">${esc(SCHOOLS[k].name)}${k===S.viewer?' <span>우리 학교</span>':''}</div>
           ${CHARS.filter(c=>c.school===k).map(c=>`
             <button class="rrow${c.id===S.cur?' on':''}" data-id="${c.id}">
-              <span class="rav">${esc(c.name[0])}${pic(c.img,c.name)}</span>
+              <span class="rav">${DEF}${pic(c.img,c.name)}</span>
               <span class="rtx"><span class="rname">${esc(c.name)}</span><span class="rsub">${esc(c.tag)}</span></span>
               ${isLocked(c)?'<span class="rtag">일촌공개</span>':''}
             </button>`).join('')}</div>`).join('')}
@@ -584,7 +588,7 @@ function renderHompy(){
   if(isLocked(c)){
     const tr=(c.lockTrace||{})[S.viewer];
     h.innerHTML=head+`<div class="locked">
-      <div class="pic" style="width:120px;margin:0 auto">[ 프로필 사진 ]${pic(c.img,c.name)}</div>
+      <div class="pic" style="width:120px;margin:0 auto">${DEF}${pic(c.img,c.name)}</div>
       <div class="big">일촌에게만 공개된 미니홈피입니다</div>
       <p>${esc(c.name)}님은 ${esc(SCHOOLS[c.school].name)} 학생에게만 홈피를 열어두었습니다.</p>
       <p>${esc(SCHOOLS[S.viewer].name)} 교복으로는 여기까지입니다.</p>
@@ -598,7 +602,7 @@ function renderHompy(){
   h.innerHTML=head+(note?`<div class="hnote">${esc(note)}</div>`:'')+`
     <div class="hbody">
       <aside class="side">
-        <div class="pic">[ 프로필 사진<br>1:1 ]${pic(c.img,c.name+' 프로필 사진')}</div>
+        <div class="pic">${DEF}${pic(c.img,c.name+' 프로필 사진')}</div>
         <div class="mood">TODAY IS... <b>${esc(c.mood)}</b></div>
         <div class="status">${fmt(status)||'&nbsp;'}</div>
         <dl class="meta">
